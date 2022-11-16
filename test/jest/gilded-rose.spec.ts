@@ -1,4 +1,6 @@
-import { Item, GildedRose } from '@/gilded-rose';
+import { GildedRose } from '@/gilded-rose';
+import { Item } from "@/item";
+import { ItemUpdater } from '@/itemUpdater';
 
 describe('Gilded Rose Test Suite', () => {
 
@@ -30,7 +32,9 @@ describe('Gilded Rose Test Suite', () => {
         new Item("+5 Dexterity Vest", 0, 0),
         new Item("+5 Dexterity Vest", -1, 1),
         new Item("Elixir of the Mongoose", 0, 0),
-        new Item("Elixir of the Mongoose", -1, 1)
+        new Item("Elixir of the Mongoose", -1, 1),
+        new Item("Conjured Mana Cake", 0, 1),
+        new Item("Conjured Mana Cake", -1, 1),
       );
       const gildedRose = new GildedRose(inputItems);
       const items = gildedRose.updateQuality();
@@ -38,9 +42,32 @@ describe('Gilded Rose Test Suite', () => {
       expect(items[1].quality).toBe(0);
       expect(items[2].quality).toBe(0);
       expect(items[3].quality).toBe(0);
+      expect(items[4].quality).toBe(0);
+      expect(items[5].quality).toBe(0);
 
     });
 
+  });
+
+  describe('Test Fixture for SellIn Values', () => {
+    it('Expect SellIn Values to drop by 1 except for Sulfuras items', () => {
+      const inputItems = new Array<Item>(
+        new Item("+5 Dexterity Vest", 0, 10),
+        new Item("Elixir of the Mongoose", 0, 10),
+        new Item("Aged Brie", 0, 10),
+        new Item("Sulfuras, Hand of Ragnaros", 0, 80),
+        new Item("Conjured Mana Cake", 0, 10),
+        new Item("Backstage passes to a TAFKAL80ETC concert", 0, 10),
+      );
+      const gildedRose = new GildedRose(inputItems);
+      const items = gildedRose.updateQuality();
+      expect(items[0].sellIn).toBe(-1);
+      expect(items[1].sellIn).toBe(-1);
+      expect(items[2].sellIn).toBe(-1);
+      expect(items[3].sellIn).toBe(0);
+      expect(items[4].sellIn).toBe(-1);
+      expect(items[5].sellIn).toBe(-1);
+    });
   });
 
   describe('Test Fixture for Normal Items', () => {
@@ -120,7 +147,7 @@ describe('Gilded Rose Test Suite', () => {
 
     it('Expect Quality Value increase by 2 when 5 < SellIn Value < 11', () => {
       const inputItems = new Array<Item>(
-        new Item("Backstage passes to a TAFKAL80ETC concert", 10, 40)
+        new Item("Backstage passes to a TAFKAL80ETC concert", 11, 40)
       );
       const gildedRose = new GildedRose(inputItems);
       const items = gildedRose.updateQuality();
@@ -129,7 +156,7 @@ describe('Gilded Rose Test Suite', () => {
 
     it('Expect Quality Value increase by 3 when SellIn Value < 6', () => {
       const inputItems = new Array<Item>(
-        new Item("Backstage passes to a TAFKAL80ETC concert", 5, 40),
+        new Item("Backstage passes to a TAFKAL80ETC concert", 6, 40),
       );
       const gildedRose = new GildedRose(inputItems);
       const items = gildedRose.updateQuality();
@@ -149,27 +176,26 @@ describe('Gilded Rose Test Suite', () => {
 
 
   // Test Fixture for "Conjured" Items
-  // NOT WORKING FOR NOW SINCE CONJURED ITEMS ARE NOT INTRODUCED YET
-  // describe('Test Fixture for "Conjured" Items', () => {
+  describe('Test Fixture for "Conjured" Items', () => {
 
-  //   it('Expect Quality Value drop by 2 when SellIn Value >= 0', () => {
-  //     const inputItems = new Array<Item>(
-  //       new Item("Conjured Mana Cake", 3, 6)
-  //     );
-  //     const gildedRose = new GildedRose(inputItems);
-  //     const items = gildedRose.updateQuality();
-  //     expect(items[0].quality).toBe(4);
-  //   });
+    it('Expect Quality Value drop by 2 when SellIn Value >= 0', () => {
+      const inputItems = new Array<Item>(
+        new Item("Conjured Mana Cake", 3, 6)
+      );
+      const gildedRose = new GildedRose(inputItems);
+      const items = gildedRose.updateQuality();
+      expect(items[0].quality).toBe(4);
+    });
 
-  //   it('Expect Quality Value drop by 4 when SellIn Value < 0', () => {
-  //     const inputItems = new Array<Item>(
-  //       new Item("Conjured Mana Cake", -1, 6)
-  //     );
-  //     const gildedRose = new GildedRose(inputItems);
-  //     const items = gildedRose.updateQuality();
-  //     expect(items[0].quality).toBe(2);
-  //   });
-
-  // });
+    it('Expect Quality Value drop by 4 when SellIn Value < 0', () => {
+      const inputItems = new Array<Item>(
+        new Item("Conjured Mana Cake", -1, 6)
+      );
+      const gildedRose = new GildedRose(inputItems);
+      const items = gildedRose.updateQuality();
+      expect(items[0].quality).toBe(2);
+    });
+  
+  });
 
 });
